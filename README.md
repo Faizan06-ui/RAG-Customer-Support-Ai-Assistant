@@ -1,152 +1,161 @@
-# Customer Support AI Assistant
+# RAG AI Support Assistant
 
-## 🔍 Overview
-This project is a **Retrieval-Augmented Generation (RAG)** based AI assistant designed to answer customer support queries. It retrieves the most relevant historical Q&A data and generates contextual, human-like responses using the **`mistralai/mistral-7b-instruct`** model via **OpenRouter.ai** API.
-
-The app is now **fully deployed** with optimized performance and dual interfaces — powered by **FastAPI** and a more interactive **Gradio** UI for quick testing.
+> RAG-powered customer support AI with explainability, multi-turn conversation, and confidence guardrails.
 
 ---
 
-## ✅ Submission Checklist
-- [x] Clean, modular GitHub repository ✅  
-- [x] Fully deployed model integration with OpenRouter ✅  
-- [x] FastAPI and Gradio interfaces ✅  
-- [x] Optimized codebase for performance ✅  
-- [x] README and PPT with approach, RAG details, and explainability ✅  
+## 🎯 Overview
+
+This is a Retrieval-Augmented Generation (RAG) system that answers customer support queries by retrieving semantically similar historical Q&A pairs and generating context-aware responses via a large language model. The system is trained on the [MohammadOthman/mo-customer-support-tweets-945k](https://huggingface.co/datasets/MohammadOthman/mo-customer-support-tweets-945k) dataset, with 50,000 rows indexed using FAISS for fast similarity search. The stack combines FastAPI, sentence-transformers, FAISS, and Mistral (via OpenRouter) with a custom vanilla JS frontend. Built as part of the Celonis AI Engineer Challenge.
+
+---
+
+## 🏗️ Architecture
+
+**RAG Pipeline Flow:**
+
+```
+User Query → Embedder → FAISS Retrieval → LLM Generator → Response
+                              ↓
+                        Retrieved Sources (shown in UI)
+```
+
+1. User submits a query via the HTML frontend
+2. Query is embedded using `sentence-transformers` (`all-MiniLM-L6-v2`)
+3. FAISS vector store retrieves the top-3 most similar historical Q&A pairs using cosine similarity
+4. Retrieved context + conversation history + current query are sent to Mistral via the OpenRouter API
+5. Response, sources, and confidence level are returned to the frontend
+6. All interactions are logged to `logs/conversations.csv` for auditability
+
+---
+
+## ✨ Features
+
+- [x] Split-panel UI: chat on left, retrieved sources on right
+- [x] Real-time similarity scores for each retrieved source
+- [x] Multi-turn conversation memory (chat history passed to LLM)
+- [x] Confidence guardrail: refuses off-topic queries gracefully
+- [x] Markdown rendering in chat responses
+- [x] Interaction logging to CSV for auditability
+- [x] `/health` endpoint for system status monitoring
+- [x] Light themed responsive frontend (no external CSS frameworks)
 
 ---
 
 ## 🛠️ Tech Stack
-- Python  
-- FastAPI  
-- Gradio  
-- FAISS (Facebook AI Similarity Search)  
-- Hugging Face SentenceTransformers (`all-MiniLM-L6-v2`)  
-- OpenRouter API (`mistralai/mistral-7b-instruct`)  
+
+| Component    | Technology                                          |
+|--------------|-----------------------------------------------------|
+| Frontend     | Vanilla HTML / CSS / JS                             |
+| Backend      | FastAPI + Uvicorn                                   |
+| Embeddings   | sentence-transformers (`all-MiniLM-L6-v2`)          |
+| Vector Store | FAISS (Facebook AI Similarity Search)               |
+| LLM          | Mistral via OpenRouter API                          |
+| Dataset      | MohammadOthman/mo-customer-support-tweets-945k      |
+| Logging      | CSV (`logs/conversations.csv`)                      |
 
 ---
 
-## 🧠 Approach Taken
+## 📁 Project Structure
 
-1. **Data Loading & Cleaning:**
-   - Loaded customer support Q&A dataset from Hugging Face: `MohammadOthman/mo-customer-support-tweets-945k`
-   - Removed nulls and duplicates, saved as `clean_data.csv`.
-
-2. **Embedding & Indexing:**
-   - Used `all-MiniLM-L6-v2` for semantic embedding.
-   - Built FAISS index for fast vector similarity search.
-
-3. **RAG Pipeline:**
-   - **Retrieval:** Top 3 most semantically similar Q&As are selected.
-   - **Augmentation:** Prompt is formed using retrieved context and the user query.
-   - **Generation:** Prompt sent to `mistralai/mistral-7b-instruct` via OpenRouter API to generate a helpful, context-aware answer.
-
-4. **Serving the App:**
-   - **FastAPI** backend with `/generate` endpoint.
-   - **Gradio** front-end for real-time interaction (preferred for usability).
-
----
-
-## 🔄 RAG Implementation
-**Retrieval**  
-- Embeds and indexes Q&A pairs using `all-MiniLM-L6-v2` + FAISS  
-- Uses L2 similarity to retrieve relevant examples
-
-**Augmentation**  
-- Combines top 3 retrieved Q&As with the user query to build the context-rich prompt
-
-**Generation**  
-- Prompt passed to `mistralai/mistral-7b-instruct` via OpenRouter  
-- Output is cleaned and post-processed for delivery
-
----
-
-## 📢 Explainability Techniques
-- Matching Q&As and similarity scores are logged for traceability.
-- Debugging and transparency supported with optional logs.
-- *(Planned)* LIME/SHAP integration for deeper model understanding.
-
----
-
-## 📦 Directory Structure
 ```
-customer-support-ai/
-├── app.py                            # FastAPI app entrypoint
-├── pipeline.py                       # RAG pipeline (retriever + generator)
-├── requirements.txt                  # Dependencies
-├── README.md                         # Project overview & how to run
-├── .gitignore                        # Ignore unwanted files (e.g., __pycache__)
-│
-├── rag/                              # Core logic of RAG
-│   ├── __init__.py
-│   ├── embedder.py                   # SentenceTransformer embedder
-│   ├── vector_store.py               # FAISS vector DB logic
-│   ├── retriever.py                  # Retrieval logic
-│   ├── generator.py                  # LLM-based response generator
-│
-├── test/                             # Test scripts for each module
-│   ├── __init__.py
-│   ├── test_embedder.py              # (optional, can test embeddings)
-│   ├── test_vector_store.py
-│   ├── test_retriever.py
-│   ├── test_generator.py
-│   ├── test_pipeline.py
-│
-├── dataset/                          # Dataset preprocessing & raw/clean files
-│   ├── dataset_preprocessor.py
-│   ├── raw/                          # (optional) raw downloaded files
-│   └── storage/                      # Cleaned CSV, FAISS index, mapping.pkl
-│       ├── clean_data.csv
-│       ├── faiss_index.index
-│       ├── mapping.pkl
-│
-├── logs/                             # Logs for interaction history
-│   └── conversations.csv
-
-
+├── app.py                        # FastAPI app, API endpoints, serves frontend
+├── pipeline.py                   # Orchestrates retrieval + generation + logging
+├── main.py                       # Gradio UI alternative interface
+├── rag/
+│   ├── embedder.py               # sentence-transformer embedding wrapper
+│   ├── retriever.py              # Loads FAISS index, runs similarity search
+│   ├── vector_store.py           # FAISS index build / load / search logic
+│   └── generator.py              # OpenRouter API call, prompt construction
+├── static/
+│   └── index.html                # Split-panel frontend UI
+├── scripts/
+│   └── build_index.py            # Downloads dataset, builds FAISS index
+├── dataset/
+│   ├── dataset_preprocessor.py   # Cleans and saves the raw dataset
+│   └── storage/                  # Stores clean_data.csv, faiss_index, mapping.pkl
+├── logs/                         # CSV interaction logs
+└── test/                         # Unit tests for each module
 ```
 
 ---
 
 ## 🚀 How to Run Locally
+
+### Prerequisites
+
+- Python 3.9+
+- OpenRouter API key (free at [openrouter.ai](https://openrouter.ai))
+
+### Installation
+
+**Step 1:** Clone the repo
 ```bash
-# Step 1: Install dependencies
+git clone https://github.com/Odulah/Costumer_support_AI_Asistant.git
+cd Costumer_support_AI_Asistant
+```
+
+**Step 2:** Install dependencies
+```bash
 pip install -r requirements.txt
-
-# Step 2: Run FastAPI server
-uvicorn app.main:app --reload
 ```
+
+**Step 3:** Create a `.env` file in the project root
+```
+OPENROUTER_API_KEY=your_key_here
+```
+
+**Step 4:** Build the FAISS index (downloads dataset, ~5 min first run)
+```bash
+python scripts/build_index.py
+```
+
+**Step 5:** Start the server
+```bash
+uvicorn app:app --reload --port 8000
+```
+
+**Step 6:** Open your browser at [http://localhost:8000](http://localhost:8000)
 
 ---
 
-## 🚀 How to Run Locally
-```bash
-# Step 1: Install dependencies
-pip install -r requirements.txt
+## 🧪 Test Queries
 
-# Step 2: Run FastAPI server
-uvicorn app:app --reload
+| # | Query | What it tests |
+|---|-------|---------------|
+| 1 | "I ordered a laptop, but it arrived with a broken screen. What should I do?" | Damage/return flow retrieval |
+| 2 | "I need help resetting my password." → "I didn't receive the reset link." | Multi-turn conversation memory |
+| 3 | "My cat chewed my phone charger. Is this covered under warranty?" | Edge case warranty retrieval |
+| 4 | "Why did you suggest contacting support?" | Explainability — check the sources panel |
 
-# (Optional) Run Gradio UI
-python gradio_ui.py
-```
 ---
 
-## 🚀 Notes on security
-```bash
-API keys (OpenRouter) are stored in .env and never exposed.
+## 📊 Explainability
 
-python-dotenv handles secure loading of environment variables.
-```
+Every response surfaces the top-3 retrieved sources with their cosine similarity scores (0–1 scale), colour-coded in the UI: **green** for scores above 70%, **orange** for 40–70%, and **red** below 40%. A confidence guardrail blocks generation entirely when the top score falls below 0.50, returning a graceful refusal instead of a hallucinated answer. All interactions — including the full retrieved context — are logged to `logs/conversations.csv`, providing a complete audit trail.
+
 ---
 
-## 🔗 Live Demo
-```bash
-https://costumer-support-ai-asistant-1.onrender.com/docs
-```
-----
+## 🔮 Future Improvements
 
-## 🤝 Credits
-```bash
-Built by Aadil Maqbool for the Customer Support AI Assistant Challenge.
+- Hybrid retrieval (BM25 + dense embeddings) for better keyword matching
+- Cross-encoder re-ranking for improved precision
+- RAGAS-based automated evaluation pipeline
+- LangGraph agentic extension with tools (order lookup, ticket creation)
+- Move to managed vector DB (Weaviate / Pinecone) for production scale
 
+---
+
+## 🔗 API Endpoints
+
+| Method | Endpoint             | Description                                                   |
+|--------|----------------------|---------------------------------------------------------------|
+| POST   | `/generate_response` | Accepts `user_query` + `history`, returns `response` + `sources` + `confidence` |
+| GET    | `/health`            | Returns system status and model info                          |
+| GET    | `/`                  | Serves the frontend UI                                        |
+
+---
+
+## 👤 Author
+
+Built by **Aadil Maqbool** for the Celonis AI Engineer Challenge.
