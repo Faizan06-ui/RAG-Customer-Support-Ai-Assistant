@@ -6,8 +6,7 @@
 
 ## 🎯 Overview
 
-This is a Retrieval-Augmented Generation (RAG) system that answers customer support queries by retrieving semantically similar historical Q&A pairs and generating context-aware responses via a large language model. The system is trained on the [MohammadOthman/mo-customer-support-tweets-945k](https://huggingface.co/datasets/MohammadOthman/mo-customer-support-tweets-945k) dataset, with 50,000 rows indexed using FAISS for fast similarity search. The stack combines FastAPI, sentence-transformers, FAISS, and Mistral (via OpenRouter) with a custom vanilla JS frontend. 
----
+This is a Retrieval-Augmented Generation (RAG) system that answers customer support queries by retrieving semantically similar historical Q&A pairs and generating context-aware responses via a large language model. The system is trained on the [MohammadOthman/mo-customer-support-tweets-945k](https://huggingface.co/datasets/MohammadOthman/mo-customer-support-tweets-945k) dataset, with 50,000 rows indexed using FAISS for fast similarity search. The stack combines FastAPI, sentence-transformers, FAISS, and Mistral (via OpenRouter) with a custom vanilla JS frontend. ---
 
 ## 🏗️ Architecture
 
