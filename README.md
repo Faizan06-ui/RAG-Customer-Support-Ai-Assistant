@@ -158,4 +158,4 @@ Every response surfaces the top-3 retrieved sources with their cosine similarity
 
 ## 👤 Author
 
-Built by **Aadil Maqbool** for the Celonis AI Engineer Challenge.
+Built by **Aadil Maqbool**
