@@ -19,7 +19,10 @@ class Pipeline:
             print(f"❌ Error initializing Pipeline: {e}")
             raise
 
-    def run(self, query, top_k=3, history=[]):
+    def run(self, query, history=None, top_k=3):
+
+     if history is None:
+        history = []
         try:
             print(f"\n🔍 Running pipeline for query: '{query}'")
             print("🔎 Step 1: Retrieving relevant past queries...")

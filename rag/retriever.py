@@ -1,5 +1,5 @@
 from .vector_store import VectorStore
-from .embedder import Embedder
+from rag.embedder import Embedder
 
 class Retriever:
     def __init__(self):

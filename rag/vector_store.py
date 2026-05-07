@@ -2,7 +2,7 @@ import pandas as pd
 import faiss
 import numpy as np
 import pickle
-from .embedder import Embedder
+from rag.embedder import Embedder
 
 
 class VectorStore:

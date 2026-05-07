@@ -1,12 +1,26 @@
+# Python cache
 __pycache__/
 *.pyc
 
-# Don't ignore these specifically needed files
+# Virtual environment
+.venv/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+
+# VS Code settings
+.vscode/
+
+# macOS files
+.DS_Store
+
+# Ignore dataset CSV if large/private
+dataset/storage/clean_data.csv
+
+# Keep FAISS index files
 !dataset/storage/
 !dataset/storage/faiss_index.index
 !dataset/storage/mapping.pkl
-
-logs/
-.env
-.vscode/
-dataset/storage/clean_data.csv
