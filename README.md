@@ -89,8 +89,8 @@ User Query → Embedder → FAISS Retrieval → LLM Generator → Response
 
 **Step 1:** Clone the repo
 ```bash
-git clone https://github.com/Odulah/Costumer_support_AI_Asistant.git
-cd Costumer_support_AI_Asistant
+git clone https://github.com/Faizan06-ui/RAG-Customer-Support-Ai-Assistant.git
+cd RAG-Customer-Support-Ai-Assistant
 ```
 
 **Step 2:** Install dependencies
