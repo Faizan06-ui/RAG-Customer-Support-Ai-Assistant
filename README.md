@@ -156,4 +156,4 @@ Every response surfaces the top-3 retrieved sources with their cosine similarity
 
 ## 👤 Author
 
-Built by **Aadil Maqbool**
+Built by **Faizan Khurshid**
